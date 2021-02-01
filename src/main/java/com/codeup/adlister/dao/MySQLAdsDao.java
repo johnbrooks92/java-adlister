@@ -28,7 +28,7 @@ public class MySQLAdsDao implements Ads {
 
     @Override
     public List<Ad> all() {
-        Statement stmt = null;
+        Statement stmt;
         try {
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM ads");
@@ -41,8 +41,7 @@ public class MySQLAdsDao implements Ads {
     @Override
     public Long insert(Ad ad) {
         try {
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(createInsertQuery(ad), Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement stmt = createInsertQuery(ad);
             ResultSet rs = stmt.getGeneratedKeys();
             rs.next();
             return rs.getLong(1);
@@ -51,14 +50,21 @@ public class MySQLAdsDao implements Ads {
         }
     }
 
-    private String createInsertQuery(Ad ad) {
-        return "INSERT INTO ads(user_id, title, description) VALUES "
-            + "(" + ad.getUserId() + ", "
-            + "'" + ad.getTitle() +"', "
-            + "'" + ad.getDescription() + "')";
+    private PreparedStatement createInsertQuery(Ad ad) {
+        String query = "INSERT INTO ads(user_id, title, description) VALUES (?, ?, ?)";
+        PreparedStatement stmt;
+        try {
+            stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            stmt.setLong(1, ad.getUserId());
+            stmt.setString(2, ad.getTitle());
+            stmt.setString(3, ad.getDescription());
+            stmt.executeUpdate();
+            return stmt;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException("cannot create add");
+        }
     }
-
-    private Ad extractAd(ResultSet rs) throws SQLException {
+        private Ad extractAd(ResultSet rs) throws SQLException {
         return new Ad(
             rs.getLong("id"),
             rs.getLong("user_id"),
