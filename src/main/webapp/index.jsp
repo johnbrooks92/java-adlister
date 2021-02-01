@@ -9,6 +9,7 @@
 <body>
     <jsp:include page="/WEB-INF/partials/navbar.jsp" />
     <div class="container">
+        <a href="/ads/create">Create Ad</a>
         <h1>Welcome to the Adlister!</h1>
     </div>
 </body>
