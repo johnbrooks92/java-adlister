@@ -1,10 +1,7 @@
 package dao;
 
-
 import models.Ad;
 import com.mysql.cj.jdbc.Driver;
-
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +45,11 @@ public class MySQLAdsDao implements Ads {
         } catch (SQLException e) {
             throw new RuntimeException("Error creating a new ad.", e);
         }
+    }
+
+    @Override
+    public Ad getAdById(long id) {
+        return null;
     }
 
     private String createInsertQuery(Ad ad) {
